@@ -54,20 +54,19 @@ const mutation = gql`
   }
 `
 
-const App = () => <ApolloProvider client={client}>
-  <Query query={query}>
-    {({ loading, error, data }) => {
-      if (loading) return <p>loading</p>
-      if (error) return <p>error</p>
+const Counter = () => <Query query={query}>
+  {({ loading, error, data }) => {
+    if (loading) return <p>loading</p>
+    if (error) return <p>error</p>
 
-      return <Mutation mutation={mutation}>
-          {increment => <div>
-            <p>{data && data.n}</p>
-            <button onClick={increment}>+</button>
-          </div>}
-      </Mutation>
-    }}
-  </Query>
+    return <Mutation mutation={mutation}>
+      {increment => <p onClick={increment}>{data.n}</p>}
+    </Mutation>
+  }}
+</Query>
+
+const App = () => <ApolloProvider client={client}>
+  <Counter/>
 </ApolloProvider>
 
 render(<App/>, document.querySelector('#app'))
