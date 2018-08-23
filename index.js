@@ -54,21 +54,23 @@ const mutation = gql`
   }
 `
 
-const ql = query => Comp => props => {
+const ql = (query, mutations) => Comp => props => {
+  const [key, mutation] = Object.entries(mutations)[0]
+
   return <Query query={query}>
     {({ loading, error, data }) => {
       if (loading) return <p>loading</p>
       if (error) return <p>error</p>
 
-      return <Comp {...props} {...data} />
+      return <Mutation mutation={mutation}>
+        {mutationFn => <Comp {...props} {...data} {...{[key]: mutationFn}} />}
+      </Mutation>
     }}
   </Query>
 }
 
-const Counter = ql(query)
-(({ n }) => <Mutation mutation={mutation}>
-  {increment => <p onClick={increment}>{n}</p>}
-</Mutation>)
+const Counter = ql(query, { increment: mutation })
+(({ n, increment }) => <p onClick={increment}>{n}</p>)
 
 const App = () => <ApolloProvider client={client}>
   <Counter/>
