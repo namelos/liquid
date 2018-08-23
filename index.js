@@ -43,16 +43,15 @@ const client = new ApolloClient({
 })
 
 const ql = (query, mutations) => Comp => props => {
-  const [key, mutation] = Object.entries(mutations)[0]
-
   return <Query query={gql(query)}>
     {({ loading, error, data }) => {
       if (loading) return <p>loading</p>
       if (error) return <p>error</p>
 
-      return <Mutation mutation={gql(mutation)}>
-        {mutationFn => <Comp {...props} {...data} {...{[key]: mutationFn}} />}
-      </Mutation>
+      return Object.entries(mutations)
+      .reduce((acc, [key, mutation]) => <Mutation mutation={gql(mutation)}>
+        {mutationFn => React.cloneElement(acc, { [key]: mutationFn })}
+      </Mutation>, <Comp {...props} {...data} />)
     }}
   </Query>
 }
