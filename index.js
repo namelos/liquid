@@ -5,16 +5,10 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import { withClientState } from 'apollo-link-state'
-import { Query, Mutation, ApolloProvider } from 'react-apollo'
+import { ApolloProvider, Mutation, Query } from 'react-apollo'
 import gql from 'graphql-tag'
 
 const cache = new InMemoryCache()
-
-const query = gql`
-  query {
-    n @client
-  }
-`
 
 const stateLink = withClientState({
   cache,
@@ -24,9 +18,17 @@ const stateLink = withClientState({
   resolvers: {
     Mutation: {
       increment: (_, __,  { cache }) => {
-        const { n } = cache.readQuery({ query })
+        const { n } = cache.readQuery({ query: gql`
+  query {
+    n @client
+  }
+` })
         const data = { n: n + 1 }
-        cache.writeQuery({ query, data })
+        cache.writeQuery({ query: gql`
+  query {
+    n @client
+  }
+`, data })
         return data
       }
     }
@@ -48,12 +50,6 @@ const client = new ApolloClient({
   cache: cache
 })
 
-const mutation = gql`
-  mutation Increment {
-    increment @client
-  }
-`
-
 const ql = (query, mutations) => Comp => props => {
   const [key, mutation] = Object.entries(mutations)[0]
 
@@ -69,7 +65,10 @@ const ql = (query, mutations) => Comp => props => {
   </Query>
 }
 
-const Counter = ql(query, { increment: mutation })
+const Counter = ql(
+  gql`query { n }`, {
+    increment: gql`mutation { increment @client }`
+  })
 (({ n, increment }) => <p onClick={increment}>{n}</p>)
 
 const App = () => <ApolloProvider client={client}>
