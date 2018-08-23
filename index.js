@@ -10,28 +10,20 @@ import gql from 'graphql-tag'
 
 const cache = new InMemoryCache()
 
+const reduceQuery = (q, f) => (_, args, { cache }) => {
+  const query = gql(q)
+  const data = f(cache.readQuery({ query }))
+  cache.writeQuery({ query, data })
+  return data
+}
+
+const increment = reduceQuery('query { n }', ({ n }) => ({ n: n + 1 }))
+
 const stateLink = withClientState({
   cache,
-  defaults: {
-    n: 1
-  },
+  defaults: { n: 1 },
   resolvers: {
-    Mutation: {
-      increment: (_, __,  { cache }) => {
-        const { n } = cache.readQuery({ query: gql`
-  query {
-    n @client
-  }
-` })
-        const data = { n: n + 1 }
-        cache.writeQuery({ query: gql`
-  query {
-    n @client
-  }
-`, data })
-        return data
-      }
-    }
+    Mutation: { increment }
   }
 })
 
