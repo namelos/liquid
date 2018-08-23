@@ -53,23 +53,21 @@ const client = new ApolloClient({
 const ql = (query, mutations) => Comp => props => {
   const [key, mutation] = Object.entries(mutations)[0]
 
-  return <Query query={query}>
+  return <Query query={gql(query)}>
     {({ loading, error, data }) => {
       if (loading) return <p>loading</p>
       if (error) return <p>error</p>
 
-      return <Mutation mutation={mutation}>
+      return <Mutation mutation={gql(mutation)}>
         {mutationFn => <Comp {...props} {...data} {...{[key]: mutationFn}} />}
       </Mutation>
     }}
   </Query>
 }
 
-const Counter = ql(
-  gql`query { n }`, {
-    increment: gql`mutation { increment @client }`
-  })
-(({ n, increment }) => <p onClick={increment}>{n}</p>)
+const Counter = ql('query { n }', {
+  increment: 'mutation { increment @client }'
+})(({ n, increment }) => <p onClick={increment}>{n}</p>)
 
 const App = () => <ApolloProvider client={client}>
   <Counter/>
