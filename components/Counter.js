@@ -6,6 +6,6 @@ export const Counter = ql('query { n }', {
   increment: 'mutation { increment @client }'
 })(({ n, increment, decrement }) => <div>
   <p>{n}</p>
-  <button onClick={increment}>+</button>
-  <button onClick={decrement}>-</button>
+  <button onClick={() => increment()}>+</button>
+  <button onClick={() => decrement()}>-</button>
 </div>)
