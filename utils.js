@@ -21,7 +21,7 @@ const queryQl = query => Comp => props => {
 }
 
 const applyVar = mutationFn => args =>
-  mutationFn({ variables: args })
+  mutationFn(args ? { variables: args } : {})
 
 const mutationQl = (key, mutation) => Comp => props => {
   return <Mutation mutation={gql(mutation)}>
