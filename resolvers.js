@@ -1,7 +1,14 @@
 import { reduceQuery } from './utils'
 
 export const defaults = {
-  n: 1
+  n: 1,
+  todos: [{
+    text: 'my first todo',
+    __typename: 'Todo'
+  }, {
+    text: 'my second todo',
+    __typename: 'Todo'
+  }]
 }
 
 const nQuery = '{ n }'

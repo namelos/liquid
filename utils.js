@@ -27,7 +27,7 @@ const mutationQl = (key, mutation) => Comp => props => {
 }
 
 const mutationsQl = mutations => compose(
-  ...Object.entries(mutations)
+  ...Object.entries(mutations || {})
   .map(([key, mutation]) => mutationQl(key, mutation))
 )
 
