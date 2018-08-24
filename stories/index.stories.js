@@ -1,12 +1,13 @@
-import React from 'react';
+import React from 'react'
+import { storiesOf } from '@storybook/react'
+import { Counter } from '../components/Counter'
+import { configureClient } from '../client'
+import { ApolloProvider } from 'react-apollo'
 
-import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
-import { linkTo } from '@storybook/addon-links';
+const Provider = ({ children }) => <ApolloProvider client={configureClient()}>
+  {children}
+</ApolloProvider>
 
-import { Button, Welcome } from '@storybook/react/demo';
-
-storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
-
-storiesOf('Button', module)
-  .add('with text', () => <Button onClick={action('clicked')}>Hello Button</Button>)
+storiesOf('Main', module)
+  .addDecorator(story => <Provider>{story()}</Provider>)
+  .add('counter', () => <Counter/>)
