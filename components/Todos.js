@@ -22,8 +22,16 @@ function TodoItem({ text }) {
 
 function AddTodo({ addTodo }) {
   let input
+
+  function handleClick(e) {
+    e.preventDefault()
+    if (!input.value) return
+    addTodo({ text: input.value })
+    input.value = ''
+  }
+
   return <div>
     <input type="text" ref={r => input = r} />
-    <button onClick={() => addTodo({ text: input.value })}>add</button>
+    <button onClick={handleClick}>add</button>
   </div>
 }
