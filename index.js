@@ -6,6 +6,7 @@ import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import { withClientState } from 'apollo-link-state'
 import { ApolloProvider, Mutation, Query } from 'react-apollo'
+import { compose } from 'redux'
 import gql from 'graphql-tag'
 
 const cache = new InMemoryCache()
@@ -17,13 +18,14 @@ const reduceQuery = (q, f) => (_, args, { cache }) => {
   return data
 }
 
-const increment = reduceQuery('query { n }', ({ n }) => ({ n: n + 1 }))
-
 const stateLink = withClientState({
   cache,
   defaults: { n: 1 },
   resolvers: {
-    Mutation: { increment }
+    Mutation: {
+      increment: reduceQuery('query { n }', ({ n }) => ({ n: n + 1 })),
+      decrement: reduceQuery('query { n }', ({ n }) => ({ n: n - 1 })),
+    }
   }
 })
 
@@ -42,23 +44,31 @@ const client = new ApolloClient({
   cache: cache
 })
 
-const ql = (query, mutations) => Comp => props => {
+const queryQl = query => Comp => props => {
   return <Query query={gql(query)}>
     {({ loading, error, data }) => {
       if (loading) return <p>loading</p>
       if (error) return <p>error</p>
-
-      return Object.entries(mutations)
-      .reduce((acc, [key, mutation]) => <Mutation mutation={gql(mutation)}>
-        {mutationFn => React.cloneElement(acc, { [key]: mutationFn })}
-      </Mutation>, <Comp {...props} {...data} />)
+      return <Comp {...props} {...data} />
     }}
   </Query>
 }
 
-const Counter = ql('query { n }', {
-  increment: 'mutation { increment @client }'
-})(({ n, increment }) => <p onClick={increment}>{n}</p>)
+const mutationQl = (key, mutation) => Comp => props => {
+  return <Mutation mutation={gql(mutation)}>
+    {mutationFn => <Comp {...props} {...{[key]: mutationFn}} />}
+  </Mutation>;
+}
+
+const Counter = compose(
+  queryQl('query { n }'),
+  mutationQl('decrement', 'mutation { decrement @client }'),
+  mutationQl('increment', 'mutation { increment @client }')
+)(({ n, increment, decrement }) => <div>
+  <p>{n}</p>
+  <button onClick={increment}>+</button>
+  <button onClick={decrement}>-</button>
+</div>)
 
 const App = () => <ApolloProvider client={client}>
   <Counter/>
