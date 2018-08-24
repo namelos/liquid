@@ -24,6 +24,14 @@
   },
   "dependencies": {
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "react-apollo": "latest",
+    "apollo-link-error": "latest",
+    "apollo-cache-inmemory": "latest",
+    "apollo-link": "latest",
+    "apollo-link-state": "latest",
+    "apollo-client": "latest",
+    "redux": "latest",
+    "graphql-tag": "latest"
   }
 }
