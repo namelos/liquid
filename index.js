@@ -5,18 +5,11 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import { withClientState } from 'apollo-link-state'
-import { ApolloProvider, Mutation, Query } from 'react-apollo'
-import { compose } from 'redux'
-import gql from 'graphql-tag'
+import { ApolloProvider } from 'react-apollo'
+
+import { ql, reduceQuery } from './utils'
 
 const cache = new InMemoryCache()
-
-const reduceQuery = (q, f) => (_, args, { cache }) => {
-  const query = gql(q)
-  const data = f(cache.readQuery({ query }))
-  cache.writeQuery({ query, data })
-  return data
-}
 
 const stateLink = withClientState({
   cache,
@@ -43,32 +36,6 @@ const client = new ApolloClient({
   ]),
   cache: cache
 })
-
-const queryQl = query => Comp => props => {
-  return <Query query={gql(query)}>
-    {({ loading, error, data }) => {
-      if (loading) return <p>loading</p>
-      if (error) return <p>error</p>
-      return <Comp {...props} {...data} />
-    }}
-  </Query>
-}
-
-const mutationQl = (key, mutation) => Comp => props => {
-  return <Mutation mutation={gql(mutation)}>
-    {mutationFn => <Comp {...props} {...{[key]: mutationFn}} />}
-  </Mutation>;
-}
-
-const mutationsQl = mutations => compose(
-  ...Object.entries(mutations)
-  .map(([key, mutation]) => mutationQl(key, mutation))
-)
-
-const ql = (query, mutations) => compose(
-  queryQl(query),
-  mutationsQl(mutations)
-)
 
 const Counter = ql('query { n }', {
   decrement: 'mutation { decrement @client }',
