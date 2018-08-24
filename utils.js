@@ -38,3 +38,8 @@ export const ql = (query, mutations) => compose(
   queryQl(query),
   mutationsQl(mutations)
 )
+
+export const createType = (name, ctor) => args => {
+  const data = ctor(args)
+  return Object.assign(data, {__typename: name})
+}

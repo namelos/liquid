@@ -1,9 +1,4 @@
-import { reduceQuery } from './utils'
-
-const createType = (name, ctor) => args => {
-  const data = ctor(args)
-  return Object.assign(data, {__typename: name})
-}
+import { reduceQuery, createType } from './utils'
 
 const Todo = createType('Todo', ({ text }) => ({ text }))
 
