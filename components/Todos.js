@@ -21,8 +21,9 @@ function TodoItem({ text }) {
 }
 
 function AddTodo({ addTodo }) {
+  let input
   return <div>
-    <input type="text" />
-    <button onClick={() => addTodo({ text: 'new todo!' })}>add</button>
+    <input type="text" ref={r => input = r} />
+    <button onClick={() => addTodo({ text: input.value })}>add</button>
   </div>
 }
