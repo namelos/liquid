@@ -3,22 +3,12 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { onError } from 'apollo-link-error'
 import { ApolloLink } from 'apollo-link'
 import { withClientState } from 'apollo-link-state'
-
-import { reduceQuery } from './utils'
+import { defaults, resolvers } from './resolvers'
 
 export function configureClient() {
   const cache = new InMemoryCache()
 
-  const stateLink = withClientState({
-    cache,
-    defaults: { n: 1 },
-    resolvers: {
-      Mutation: {
-        increment: reduceQuery('query { n }', ({ n }) => ({ n: n + 1 })),
-        decrement: reduceQuery('query { n }', ({ n }) => ({ n: n - 1 })),
-      }
-    }
-  })
+  const stateLink = withClientState({ cache, defaults, resolvers })
 
   return new ApolloClient({
     link: ApolloLink.from([
