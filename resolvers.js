@@ -9,10 +9,7 @@ const Todo = createType('Todo', ({ text }) => ({ text }))
 
 export const defaults = {
   n: 1,
-  todos: [
-    Todo({ text: 'my first todo' }),
-    Todo({ text: 'my second todo' })
-  ]
+  todos: []
 }
 
 const nQuery = '{ n }'
