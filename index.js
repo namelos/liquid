@@ -60,10 +60,17 @@ const mutationQl = (key, mutation) => Comp => props => {
   </Mutation>;
 }
 
+const mutationsQl = mutations => compose(
+  ...Object.entries(mutations)
+  .map(([key, mutation]) => mutationQl(key, mutation))
+)
+
 const Counter = compose(
   queryQl('query { n }'),
-  mutationQl('decrement', 'mutation { decrement @client }'),
-  mutationQl('increment', 'mutation { increment @client }')
+  mutationsQl({
+    decrement: 'mutation { decrement @client }',
+    increment: 'mutation { increment @client }'
+  })
 )(({ n, increment, decrement }) => <div>
   <p>{n}</p>
   <button onClick={increment}>+</button>
