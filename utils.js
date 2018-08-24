@@ -20,9 +20,12 @@ const queryQl = query => Comp => props => {
   </Query>
 }
 
+const applyVar = mutationFn => args =>
+  mutationFn({ variables: args })
+
 const mutationQl = (key, mutation) => Comp => props => {
   return <Mutation mutation={gql(mutation)}>
-    {mutationFn => <Comp {...props} {...{[key]: mutationFn}} />}
+    {mutationFn => <Comp {...props} {...{[key]: applyVar(mutationFn)}} />}
   </Mutation>;
 }
 
