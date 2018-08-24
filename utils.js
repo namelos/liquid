@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 
 export const reduceQuery = (q, f) => (_, args, { cache }) => {
   const query = gql(q)
-  const data = f(cache.readQuery({ query }))
+  const data = f(cache.readQuery({ query }), args)
   cache.writeQuery({ query, data })
   return data
 }

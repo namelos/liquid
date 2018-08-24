@@ -16,10 +16,13 @@ export const defaults = {
 }
 
 const nQuery = '{ n }'
+const todoQuery = '{ todos { text } }'
 
 export const resolvers = {
   Mutation: {
     increment: reduceQuery(nQuery, ({ n }) => ({ n: n + 1 })),
     decrement: reduceQuery(nQuery, ({ n }) => ({ n: n - 1 })),
+    addTodo: reduceQuery(todoQuery, ({ todos }, { text }) =>
+      ({ todos: [...todos, Todo({ text })] }))
   }
 }

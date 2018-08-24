@@ -1,11 +1,14 @@
 import React from 'react'
 import { ql } from '../utils'
 
-export const Todos = ql('{ todos { text } }')
-(function Todos({ todos }) {
+export const Todos = ql('{ todos { text } }', {
+  addTodo: `mutation {
+    addTodo(text: $text) @client 
+  }`
+})(function Todos({ todos, addTodo }) {
   return <div>
     <TodoList todos={todos} />
-    <AddTodo />
+    <AddTodo addTodo={addTodo} />
   </div>
 })
 
@@ -19,9 +22,9 @@ function TodoItem({ text }) {
   return <li>{text}</li>
 }
 
-function AddTodo() {
+function AddTodo({ addTodo }) {
   return <div>
     <input type="text" />
-    <button>add</button>
+    <button onClick={() => addTodo({ variables: { text: 'new todo!'}})}>add</button>
   </div>
 }
